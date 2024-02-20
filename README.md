@@ -19,7 +19,7 @@ This Django-powered platform provides a space for vendors to connect and transac
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/nishorgo/CommonGoods.git](https://github.com/nishorgo/CommonGoods.git)
+   git clone https://github.com/nishorgo/CommonGoods.git
 
 2. **Install dependecies:**
    ```bash
