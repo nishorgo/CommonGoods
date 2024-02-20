@@ -1,0 +1,114 @@
+{% extends '_base.html' %}
+
+{% block extend_head %}
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+<script> 
+    function initMap() {
+        const directionsRenderer = new google.maps.DirectionsRenderer();
+        const directionsService = new google.maps.DirectionsService();
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 10,
+            center: { lat: {{origin.lat}}, lng: {{origin.lng}} },
+        });
+        
+        directionsRenderer.setMap(map);
+        calculateAndDisplayRoute(directionsService, directionsRenderer);
+    }
+      
+    function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+        const waypoints = {{ locations | safe }}; // Get the locations array
+
+        // Extract location objects for use with Google Maps
+        const extractedWaypoints = waypoints.map(waypoint => ({ 
+            location: { lat: waypoint.lat, lng: waypoint.lng },
+            stopover: false 
+        }));
+      
+        directionsService
+          .route({
+            origin: { lat: {{origin.lat}}, lng: {{origin.lng}} },
+            destination: { lat: {{destination.lat}}, lng: {{destination.lng}} },
+            waypoints: extractedWaypoints, 
+            optimizeWaypoints: true,
+            travelMode: google.maps.TravelMode['DRIVING'],
+          })
+          .then((response) => {
+            directionsRenderer.setDirections(response);
+          })
+          .catch((e) => window.alert("Directions request failed due to " + status));
+    }
+      
+      window.initMap = initMap;
+
+</script>
+
+{% endblock extend_head %}
+
+{% block content %}
+<div class="mt-5 pt-5 pageholder">
+    <div class="mb-3"> 
+        
+        <h3>Direction route for the current pending orders</h3>
+        
+    </div>
+
+
+    <div class="linkholder">
+        <div class="mapholder border border-primary"> 
+            <div id="map"> </div>
+
+            <script async
+                src="https://maps.googleapis.com/maps/api/js?key={{key}}&libraries=geometry&loading=async&callback=initMap">
+            </script>
+
+        </div>
+        
+     </div>
+
+
+     <table class="my-5 py-5">
+        <tbody>
+          <tr>
+            <td>Directions</td>
+            <td id="dir-toggle">click <a href="javascript:void(0)" onclick="DirectionsToggle()">here</a></td>      
+          </tr>
+    
+        </tbody>
+      </table>
+    
+
+    {% for leg in legs %}
+    <table id="dir-table" hidden>
+        <tbody>
+              <tr>
+              <td>Leg {{ forloop.counter }}</td>
+              <tr>
+                <td>Start: {{ leg.origin_address }}</td> 
+              </tr>
+              <tr>
+                <td>Destination: {{ leg.destination_address }}</td>
+              </tr>
+              <tr>
+                <td>Duration: {{ leg.duration }}</td>
+              </tr>
+              <tr>
+                <td>Distance: {{ leg.distance }}</td>     
+              </tr>
+            </tr>
+            {% for step in leg.steps %}
+            <tr>
+                <td>{{ step|safe }}</td>   
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+
+
+
+</div>
+
+
+{% endblock %}

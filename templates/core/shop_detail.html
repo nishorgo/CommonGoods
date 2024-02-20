@@ -1,0 +1,75 @@
+<!-- shop_detail.html -->
+{% extends '_base.html' %}
+
+{% block content %}
+
+  <div class="mt-4 p-4 container-fluid">
+    <form method="GET" action="{% url 'shop_detail' shop.id %}">
+      <div class="row d-flex justify-content-between">
+        <div class="col-sm-6">
+          <input type="text" name="q" placeholder="Search by product name" class="mb-2">
+        </div>
+        <div class="col-sm-2">
+          <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+        <div class="col-sm-2">
+          <a href="{% url 'shop_address' shop.id %}" class="btn btn-success">Update Address</a>
+        </div>
+        <div class="col-sm-2">
+          <a href="{% url 'merge_database' shop.id %}" class="btn btn-success">Sync Database</a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="my-2 py-2">
+    <div class="container">
+      <div class="row justify-content-center align-items-center">
+        <div class="col-md-10 text-center mb-4">
+          
+          {% if query %}
+            <h2>Search Results for "{{ query }}"</h2>
+          {% else %}
+            <h2>Products in your shop</h2>
+          {% endif %}
+
+
+            <div class="table-responsive">
+
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Brand</th>
+                    <th scope="col">Weight</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Retail Price</th>
+                    <th scope="col">CG Price</th>
+                    <th scope="col">Expiration Date</th>
+                  </tr>
+                </thead>
+                
+                {% for product in products %}
+                <tbody>
+                  <tr>
+                    <td>{{ product.product.name }}</td>
+                    <td>{{ product.product.brand }}</td>
+                    <td>{{ product.weight }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.retail_price }}</td>
+                    <td>{{ product.platform_price }}</td>
+                    <td>{{ product.expiration_date }}</td>
+                  </tr>
+                </tbody>
+                {% endfor %}
+              </table>
+
+            </div>
+          
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

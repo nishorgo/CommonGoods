@@ -1,0 +1,18 @@
+{% extends "_base.html" %}
+{% block title %}Business List{% endblock title %}
+{% block content %}
+
+<div class="my-5 py-5">
+  <a href="{% url 'register_business' %}" class="btn btn-success">Register Business</a>
+</div>
+
+<div class="d-flex justify-content-center align-items-center">
+    {% for shop in shops %}
+        <div class="mx-2">
+          <a href="{% url 'shop_detail' shop.id %}" class="btn btn-success">{{ shop.name }}</a>
+        </div>
+    {% endfor %}
+
+</div>
+
+{% endblock content %}

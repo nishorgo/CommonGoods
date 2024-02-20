@@ -1,0 +1,35 @@
+{% extends "_base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Order Product{% endblock title %}
+
+{% block extend_head %}
+  
+{% endblock extend_head %}
+
+{% block content %}
+
+    <div class="my-5 py-5 d-flex justify-content-center align-items-center">
+        {% if form %}
+        <form id="orderform" method="POST" action="{% url 'order' product_id %}">
+            {% csrf_token %}
+            
+            <label for="quantity">Quantity</label>
+            {{form.quantity}}
+
+            {% if error %}
+                <p>{{ error }}</p>
+            {% endif %}
+            
+            <button type="submit">Order</button>
+        </form>
+
+        {% else %}
+            <p>You don't have any shops registered to create an order.</p>
+        {% endif %}
+    </div>
+
+{% endblock content %}
+
+
+{% block extend_footer %}
+{% endblock extend_footer %}

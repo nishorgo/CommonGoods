@@ -1,0 +1,72 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block content %}
+
+  <div class="mt-4 p-4 container-fluid">
+      <form method="GET" action="{% url 'home' %}">
+        <div class="row d-flex justify-content-between">
+          <div class="col-sm-5">
+            <input type="text" name="product_name" placeholder="Search by product name" class="mb-2">
+          </div>
+          <div class="col-sm-5">
+            <input type="text" name="shop_name" placeholder="Search by shop name" class="mb-2">
+          </div>
+          <div class="col-sm-2">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
+        </div>
+      </form>
+  </div>
+
+  <div class="my2 py-2">
+    <div class="container-fluid">
+      <div class="row justify-content-center align-items-center">
+        <div class="col-xl-10 text-center mb-4">
+
+          {% if query %}
+          <div class="my-2 py-2">
+            <h2>Search Results for "{{query}}"</h2>
+          </div>
+          {% endif %}
+
+          <div class="container-fluid">
+            <div class="row row-cols-1 row-cols-md-4 g-4">
+              {% for product in products %}
+                <div class="col">
+                  <div class="card">
+                    {% if product.product.cover %}
+                      <img src="{{ product.product.cover.url }}" class="card-img-top" alt="product.product.name">
+                    {% else %}
+                      <img src="{{ default_image_url }}" class="card-img-top" alt="Default product image">
+                    {% endif %}
+                    <div class="card-body darkish-card-body ">
+                      <h6 class="card-title">{{ product.shop.name }}</h6>
+                      <h6 class="card-title">{{ product.product.name }}</h6>
+                      {% if product.product.brand %}
+                        <h6 class="card-title">{{ product.product.brand }}</h6>
+                      {% else %}
+                        <h6 class="card-title">No brand specified</h6>
+                      {% endif %}
+                      <h6 class="card-title">Weight: {{ product.weight }} gm</h6>
+                      <h6 class="card-title">Qty: {{  product.quantity }}</h6>
+                      <h6 class="card-title">CG Price: {{ product.platform_price }}</h6>
+                      
+                      {% if user.is_authenticated %}
+                        <a href="{% url "order" product.id %}" class="btn btn-primary">Click to Order</a>
+                      {% endif %}
+
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+{% endblock %}

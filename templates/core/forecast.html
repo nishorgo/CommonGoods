@@ -1,0 +1,38 @@
+<!-- shop_detail.html -->
+{% extends '_base.html' %}
+
+{% block content %}
+
+
+  <div class="my-5 py-5">
+    <div class="container">
+      <div class="row justify-content-center align-items-center">
+        <div class="col-md-6 text-center mb-4">
+            
+            <h2 class="mb-5">Forecast values for the product demand of current month</h2>
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Product Name</th>
+                  <th scope="col">Forecast Value</th>
+                </tr>
+              </thead>
+              
+              {% for key, value in forecasts.items %}
+              <tbody>
+                <tr>
+                  <td>{{ key }}</td>
+                  <td>{{ value.0 }}</td>
+                </tr>
+              </tbody>
+              {% endfor %}
+            </table>
+          
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authenticate Google Sheets</title>
+</head>
+<body>
+    <form method="post" action="{% url 'authenticate_google_sheets' %}">
+        {% csrf_token %}
+        <button type="submit">Authenticate Google Sheets</button>
+    </form>
+</body>
+</html>

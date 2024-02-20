@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+psycopg2-binary = "*"
+django-allauth = "*"
+django-crispy-forms = "*"
+crispy-bootstrap5 = "*"
+google-api-python-client = "*"
+google-auth-httplib2 = "*"
+google-auth-oauthlib = "*"
+google-auth = "*"
+requests = "*"
+django-sslserver = "*"
+humanfriendly = "*"
+googlemaps = "*"
+ortools = "*"
+pillow = "*"
+pandas = "*"
+openpyxl = "*"
+statsmodels = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
