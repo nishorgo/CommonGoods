@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -172,3 +173,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/1'
+CELERY_BEAT_SCHEDULE = {
+    'alert_users': {
+        'task': 'core.tasks.alert_users',
+        'schedule': crontab(minute=0, hour=0)
+    }
+}

@@ -22,6 +22,8 @@ pillow = "*"
 pandas = "*"
 openpyxl = "*"
 statsmodels = "*"
+redis = "*"
+celery = "*"
 
 [dev-packages]
 
