@@ -41,6 +41,9 @@
 
                         {% if user.is_superuser %}
                             <li class="nav-item mx-3">
+                                <a class="nav-link" href="{% url 'hub' %}">Configure Hub</a>
+                            </li>
+                            <li class="nav-item mx-3">
                                 <a class="nav-link" href="{% url 'mail_expired_products' %}">Email Alert</a>
                             </li>
                             <li class="nav-item mx-3">

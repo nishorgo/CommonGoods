@@ -10,8 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
+from dotenv import load_dotenv
+
 from pathlib import Path
 from celery.schedules import crontab
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -131,8 +136,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'Common Goods'
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 
 LOGIN_REDIRECT_URL = "home"
@@ -158,9 +163,9 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = str(BASE_DIR.joinpath('media'))
 DEFAULT_PRODUCT_IMAGE_URL = "/media/products/default.png"
 
-GOOGLE_API_KEY = ""
-RECAPTCHA_KEY = ""
-RECAPTCHA_SECRET_KEY = ""
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+RECAPTCHA_KEY = os.getenv('RECAPTCHA_KEY')
+RECAPTCHA_SECRET_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
 BASE_COUNTRY = "CA"
 
 

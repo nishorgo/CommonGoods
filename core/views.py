@@ -10,13 +10,14 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.http import JsonResponse
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
+from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.contrib import messages
 
-from .forms import RegisterBusinessForm, BusinessAddressForm, CreateProductForm, CreateProductShopForm, OrderForm
-from .models import Business, Category, Product, ProductShop, Order
+from .forms import RegisterBusinessForm, BusinessAddressForm, CreateProductForm, CreateProductShopForm, OrderForm, HubConfigureForm
+from .models import Business, Category, Product, ProductShop, Order, HubConfiguration
 from .maps import calculate_distance, get_directions, reverse_geocode
 from .forecast import exp_smoothing_forecast
 from .sheets import access_sheets, sort_sheet_data, sync_data_with_sheet
@@ -136,7 +137,38 @@ def address_view(request, shop_id):
         context['shop'] = shop
 
         return render(request, 'core/address.html', context)
+    
         
+def hub_configuration_view(request):
+    config = None
+    try:
+        config = HubConfiguration.objects.get()
+    except HubConfiguration.DoesNotExist:
+        pass  # No action needed if the instance doesn't exist 
+
+    if request.method == 'POST':
+        if config:  # Check if config exists
+            form = HubConfigureForm(request.POST, instance=config) 
+        else:
+            form = HubConfigureForm(request.POST) 
+
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'result': 'SUCCESS', 'message': 'Hub details succesfully updated'})  
+        else:
+            message = FormErrors(form)
+            return JsonResponse({'result': 'Error', 'message': message})  
+
+    # Initial GET request handling:
+    form = HubConfigureForm(instance=config)  # Create the form even if config doesn't exist
+    context = {
+        'form': form, 
+        'config': config, 
+        'google_api_key': settings.GOOGLE_API_KEY,
+        'base_country': settings.BASE_COUNTRY
+    }
+    return render(request, 'core/hub_configuration.html', context)
+
 
 def order_view(request, productshop_id):
     product_shop = get_object_or_404(ProductShop, id=productshop_id)
@@ -155,6 +187,9 @@ def order_view(request, productshop_id):
             if quantity > product_shop.quantity:
                 error = "Quantity cannot exceed available stock."
             else:
+                hub = HubConfiguration.objects.get()
+                hub_coordinate = (hub.latitude, hub.longitude)
+
                 from_shop = product_shop.shop
                 from_shop_coordinate = (from_shop.latitude, from_shop.longitude)
 
@@ -162,13 +197,17 @@ def order_view(request, productshop_id):
                 to_shop_coordinate = (to_shop.latitude, to_shop.longitude)
 
                 distance = calculate_distance(from_shop_coordinate, to_shop_coordinate)
+                distance += calculate_distance(hub_coordinate, from_shop_coordinate)
+
+                delivery_charge = distance * float(hub.fare_per_km)
 
                 order = Order(
                     from_shop=from_shop,
                     to_shop=to_shop,
                     product=product_shop.product,
                     quantity=quantity,
-                    distance=distance
+                    distance=distance,
+                    delivery_charge=delivery_charge
                 )
                 order.save()
 
@@ -180,8 +219,9 @@ def order_view(request, productshop_id):
 
 def direction_view(request):
     undelivered_orders = Order.objects.filter(has_delivered=False)
+    hub = HubConfiguration.objects.get()
     
-    locations = []
+    locations = [{'lat': float(hub.latitude), 'lng': float(hub.longitude)}]
     for order in undelivered_orders:
         locations.append({'lat': float(order.from_shop.latitude), 'lng': float(order.from_shop.longitude)})
         locations.append({'lat': float(order.to_shop.latitude), 'lng': float(order.to_shop.longitude)})

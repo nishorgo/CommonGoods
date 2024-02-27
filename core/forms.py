@@ -1,6 +1,6 @@
 from django import forms
 from django.core import validators
-from .models import Brand, Business, Product, ProductShop
+from .models import HubConfiguration, Business, Product, ProductShop
 
 class RegisterBusinessForm(forms.ModelForm):
     name = forms.CharField(max_length=255, required=True, widget=forms.TextInput(attrs={'placeholder': 'Your business name...'}))
@@ -46,6 +46,22 @@ class OrderForm(forms.Form):
         required=True,
         widget=forms.TextInput(attrs={'placeholder': 'Type quantity'})
     )
+
+
+class HubConfigureForm(forms.ModelForm):
+    fare_per_km = forms.CharField(max_length=100, required=True, label='Fare/KM')
+
+    address = forms.CharField(max_length=100, required=True, label='Address', widget=forms.HiddenInput())
+    town = forms.CharField(max_length=100, required=True, label='Town/City', widget=forms.HiddenInput())
+    county = forms.CharField(max_length=100, required=True, label='Province', widget=forms.HiddenInput())
+    post_code = forms.CharField(max_length=8, required=True, label='Postal Code', widget=forms.HiddenInput())
+    country = forms.CharField(max_length=40, required=True, label='Country', widget=forms.HiddenInput())
+    longitude = forms.CharField(max_length=50, required=True, label='Longitude', widget=forms.HiddenInput())
+    latitude = forms.CharField(max_length=50, required=True, label='Latitude', widget=forms.HiddenInput())
+
+    class Meta:
+        model = HubConfiguration
+        fields = '__all__'
 
 
 

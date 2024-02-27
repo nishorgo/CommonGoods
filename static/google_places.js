@@ -67,13 +67,15 @@ function onPlaceChanged (){
         }
         $('#id_address').val(num + " " + addy)
 
-        //find all hidden inputs & ignore csrf token
-        var x = $( "input:hidden" );
+        //find all hidden inputs within the form (adjust the selector if needed)
+        var x = $("#profileform input:hidden"); 
         for (let i = 0; i < x.length; i++){
-            if (x[i].name != "csrfmiddlewaretoken")  
-            x[i].type = "text"; 
-            x.eq(x).attr("class", 'hidden-el')  
+            if (x[i].name != "csrfmiddlewaretoken") {
+                x[i].type = "text"; // Change to visible input
+                x.eq(x).attr("class", 'hidden-el') 
+            }
         }
+
 
         //fade in the completed form
         $('.hidden-el').fadeIn()

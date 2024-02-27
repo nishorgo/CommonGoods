@@ -1,4 +1,4 @@
-body {font-family: 'Courier Prime', monospace;}
+body {font-family: 'Calibri', monospace;}
 * {box-sizing: border-box;}
 
 body {
@@ -8,6 +8,12 @@ body {
 body, html, .map-container {
   height: 100%;
 }
+
+form #profileform label {  /* Adjust selector to your exact structure */
+  display: block !important; /* Use !important cautiously */ 
+  visibility: visible !important;
+}
+
 
 .card-img-top {
   object-fit: contain; /* Or object-fit: cover; */
@@ -104,22 +110,22 @@ input[type=text], input[type=email], input[type=password], select, textarea {
 
 ::-webkit-input-placeholder { /* Edge */
   color: #9c07b6;
-  font-family: 'Courier Prime', monospace;
+  font-family: 'Calibri', monospace;
 }
 
 :-ms-input-placeholder { /* Internet Explorer */
   color: #9c07b6;
-  font-family: 'Courier Prime', monospace;
+  font-family: 'Calibri', monospace;
 }
 
 ::placeholder {
   color: #9c07b6;
-  font-family: 'Courier Prime', monospace;
+  font-family: 'Calibri', monospace;
 }
 
 input, select{
   color: #9c07b6;
-  font-family: 'Courier Prime', monospace;
+  font-family: 'Calibri', monospace;
 
 }
 
@@ -296,7 +302,7 @@ button[type=submit]:hover {
 }
 
 table {
-  font-family: 'Courier Prime', monospace;
+  font-family: 'Calibri', monospace;
   border-collapse: collapse;
   width: 100%;
 }
