@@ -14,6 +14,9 @@ form #profileform label {  /* Adjust selector to your exact structure */
   visibility: visible !important;
 }
 
+.header-row { 
+  font-weight: bold;
+}
 
 .card-img-top {
   object-fit: contain; /* Or object-fit: cover; */

@@ -3,6 +3,8 @@ from .cart import Cart
 from core.models import ProductShop
 from django.http import JsonResponse
 
+import json
+
 
 def cart_summary(request):
     cart = Cart(request)
@@ -28,4 +30,17 @@ def cart_delete(request):
 
 
 def cart_update(request):
-    pass
+    cart = Cart(request)
+
+    if request.POST.get('action') == 'post':
+        cart_qty = {}
+        data_list = request.POST.getlist('quantities') 
+        quantities = json.loads(data_list[0])
+        if quantities:
+            for product_id, quantity in quantities.items():
+                cart.update(product=product_id, quantity=quantity)
+                cart_qty[product_id] = quantity
+
+        response = JsonResponse(cart_qty)
+        return response
+        #return redirect('cart_summary')

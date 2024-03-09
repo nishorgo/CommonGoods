@@ -18,7 +18,15 @@ class Cart():
         if product_id in self.cart:
             pass
         else:
-            self.cart[product_id] = {'price': str(product.platform_price)}
+            self.cart[product_id] = {'price': str(product.platform_price), 'quantity': 1}
+
+        self.session.modified = True
+
+    
+    def update(self, product, quantity):
+        product_id = str(product)
+        product_qty = int(quantity)
+        self.cart[product_id]['quantity'] = product_qty
 
         self.session.modified = True
 
