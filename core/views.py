@@ -221,10 +221,12 @@ def direction_view(request):
     undelivered_orders = Order.objects.filter(has_delivered=False)
     hub = HubConfiguration.objects.get()
     
-    locations = [{'lat': float(hub.latitude), 'lng': float(hub.longitude)}]
+    locations = [{'lat': float(hub.latitude), 'lng': float(hub.longitude), 'title': 'Central Hub', 'index': 1}]
+    index = 2
     for order in undelivered_orders:
-        locations.append({'lat': float(order.from_shop.latitude), 'lng': float(order.from_shop.longitude)})
-        locations.append({'lat': float(order.to_shop.latitude), 'lng': float(order.to_shop.longitude)})
+        locations.append({'lat': float(order.from_shop.latitude), 'lng': float(order.from_shop.longitude), 'title': order.from_shop.name, 'index': index})
+        locations.append({'lat': float(order.to_shop.latitude), 'lng': float(order.to_shop.longitude), 'title': order.to_shop.name, 'index': index+1})
+        index += 2
 
     directions = get_directions(locations)
     route = directions['routes'][0]

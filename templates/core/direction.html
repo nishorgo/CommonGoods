@@ -5,16 +5,52 @@
 <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 
 <script> 
-    function initMap() {
-        const directionsRenderer = new google.maps.DirectionsRenderer();
-        const directionsService = new google.maps.DirectionsService();
-        const map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 10,
-            center: { lat: {{origin.lat}}, lng: {{origin.lng}} },
+    async function initMap() {
+      
+      const directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true});
+      const directionsService = new google.maps.DirectionsService();
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 10,
+        center: { lat: {{origin.lat}}, lng: {{origin.lng}} },
+      });
+      
+      directionsRenderer.setMap(map);
+      calculateAndDisplayRoute(directionsService, directionsRenderer);
+      
+      const originMarker = new google.maps.Marker({
+        position: { lat: {{ origin.lat }}, lng: {{ origin.lng }} },
+        map: map,
+        label: {
+          text: "{{ origin.index }}", 
+          color: 'white'
+        },
+        title: "{{ origin.title }}"
+      });
+
+      const destinationMarker  = new google.maps.Marker({
+        position: { lat: {{ destination.lat }}, lng: {{ destination.lng }} },
+        map: map,
+        label: {
+          text: "{{ destination.index }}", 
+          color: 'white'
+        },
+        title: "{{ destination.title}}"
+      });
+
+      const waypoints = {{ locations | safe }};
+      console.log(waypoints)  
+
+      waypoints.forEach(waypoint => {
+        new google.maps.Marker({
+            position: { lat: waypoint.lat, lng: waypoint.lng },
+            map: map,
+            label: {
+              text: String(waypoint.index), 
+              color: 'white'
+            },
+            title: waypoint.title
         });
-        
-        directionsRenderer.setMap(map);
-        calculateAndDisplayRoute(directionsService, directionsRenderer);
+      });
     }
       
     function calculateAndDisplayRoute(directionsService, directionsRenderer) {
@@ -40,7 +76,7 @@
           .catch((e) => window.alert("Directions request failed due to " + status));
     }
       
-      window.initMap = initMap;
+    window.initMap = initMap;
 
 </script>
 

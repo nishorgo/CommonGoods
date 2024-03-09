@@ -1,6 +1,11 @@
 {% extends '_base.html' %}
 {% load static %}
 
+{% block extend_head %}
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+{% endblock extend_head %}
+
+
 {% block content %}
 
   <div class="mt-4 p-4 container-fluid">
@@ -55,6 +60,8 @@
                       {% if user.is_authenticated %}
                         <a href="{% url "order" product.id %}" class="btn btn-primary">Click to Order</a>
                       {% endif %}
+                      
+                      <button type="button" value="{{ product.id }}" class="btn btn-primary add-cart" id="add-cart-{{ product.id }}">Add to Cart</button>
 
                     </div>
                   </div>
@@ -67,6 +74,30 @@
       </div>
     </div>
   </div>
+
+  <script>
+    $(document).on('click', '.add-cart', function(e){
+      e.preventDefault();
+      $.ajax({
+        type: 'POST',
+        url: '{% url 'cart_add' %}',
+        data: {
+          product_id: $(this).val(),
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          action: 'post'
+        },
+
+        success: function(json) {
+          document.getElementById("cart_quantity").textContent = json.qty
+        },
+
+        error: function(xhr, errmsg, err) {
+
+        },
+
+      });
+    })
+  </script>
 
 
 {% endblock %}
