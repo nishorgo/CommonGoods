@@ -11,30 +11,39 @@
     <div class="my-5 py-5">
     <div class="container">
         <div class="row justify-content-center align-items-center">
-            <div class="col-md-8 text-center mb-4">
-                <h2 class="mb-5">Cart Summary</h2>
+            <div class="col-md-10 text-center mb-4">
+                <h1 class="mb-5"><strong>Cart Summary</strong></h1>
 
-                <div class="row header-row mb-2"> <div class="col-2"><h6>Product Name</h6></div>
-                    <div class="col-2"><h6>Shop Name</h6></div>
-                    <div class="col-2"><h6>Price</h6></div>
-                    <div class="col-6"><h6>Quantity</h6></div> 
+                <div class="row header-row mb-2"> <div class="col-2"><h5><strong>Product Name</strong></h5></div>
+                    <div class="col-2"><h5><strong>Shop Name</strong></h5></div>
+                    <div class="col-2"><h5><strong>Price</strong></h5></div>
+                    <div class="col-6"><h5><strong>Quantity</strong></h5></div> 
                 </div>
                 
 
-                {% for product in cart_products %}
+                {% for product_id, product_info in cart_products.items %}
                     <div class="product-details row"> 
-                        <div class="col-2"><h6>{{ product.product.name }}</h6></div>
-                        <div class="col-2"><h6>{{ product.shop.name }}</h6></div>
-                        <div class="col-2"><h6>{{ product.platform_price }}</h6></div>
+                        <div class="col-2"><h6>{{ product_info.product_name }}</h6></div>
+                        <div class="col-2"><h6>{{ product_info.shop_name }}</h6></div>
+                        <div class="col-2"><h6>{{ product_info.price }}</h6></div>
                         <div class="col-6 qty-adjust d-flex align-items-center">
-                            <button class="btn btn-minus" data-product-id="{{ product.id }}"><i class="fa-solid fa-minus"></i></button>
-                            <input type="text" class="qty-input form-control" data-product-id="{{ product.id }}" value="{{ product.quantity }}" readonly>  
-                            <button class="btn btn-plus" data-product-id="{{ product.id }}"><i class="fa-solid fa-plus"></i></button>
+                            <button class="btn btn-minus" data-product-id="{{ product_info.id }}"><i class="fa-solid fa-minus"></i></button>
+                            <input type="text" class="qty-input form-control" data-product-id="{{ product_info.id }}" value="{{ product_info.quantity }}" readonly>  
+                            <button class="btn btn-plus" data-product-id="{{ product_info.id }}"><i class="fa-solid fa-plus"></i></button>
+                            <button class="btn btn-danger delete-cart" data-product-id="{{ product_info.id }}"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
                 {% endfor %}
 
-                <button id="update-cart-btn" class="btn btn-primary">Update Cart</button>
+                <h3><strong>Total: ${{ total }}</strong></h3>
+
+                <div class="row mt-4"> <div class="col-md-6">
+                    <button id="update-cart-btn" class="btn btn-primary">Update Cart</button>
+                </div>
+                <div class="col-md-6"> 
+                    <a href="{% url 'order' %}" class="btn btn-success" id="confirm-order-btn">Confirm Order</a>
+                </div>
+                </div>
 
                 
             </div>
@@ -82,13 +91,34 @@
                     },
                     success: function(json) {
                         console.log('Cart updated successfully');
+                        location.reload()
                     },
                     error: function(xhr, errmsg, err) {
                         console.error('Cart update failed:', err); 
                     }
                 });
             });
-        });        
+        });
+        
+        $(document).on('click', '.delete-cart', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'cart_delete' %}',
+                data: {
+                    product_id: $(this).data('productId'), 
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function(json) {
+                    location.reload();
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error('Cart update failed:', err); 
+                }
+            });
+        });
     </script>
 
 {% endblock content %}

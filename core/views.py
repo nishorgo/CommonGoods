@@ -170,51 +170,49 @@ def hub_configuration_view(request):
     return render(request, 'core/hub_configuration.html', context)
 
 
-def order_view(request, productshop_id):
-    product_shop = get_object_or_404(ProductShop, id=productshop_id)
-    shop_choices = get_user_shops(request)
-    form = None
+def order_view(request):
+    cart = request.session.get('session_key', {})
     error = None
 
-    if shop_choices:
-        form = OrderForm(product_shop=product_shop)
+    for product_id, product_info in cart.items():
+        product = get_object_or_404(ProductShop, id=int(product_id))
+        quantity = product_info['quantity']
 
-    if request.method == 'POST':
-        form = OrderForm(data=request.POST)
-        if form.is_valid():
-            quantity = form.cleaned_data['quantity']
+        if quantity > product.quantity:
+            error = "Quantity cannot exceed available stock."
+        else:
+            hub = HubConfiguration.objects.get()
+            hub_coordinate = (hub.latitude, hub.longitude)
 
-            if quantity > product_shop.quantity:
-                error = "Quantity cannot exceed available stock."
-            else:
-                hub = HubConfiguration.objects.get()
-                hub_coordinate = (hub.latitude, hub.longitude)
+            from_shop = product.shop
+            from_shop_coordinate = (from_shop.latitude, from_shop.longitude)
 
-                from_shop = product_shop.shop
-                from_shop_coordinate = (from_shop.latitude, from_shop.longitude)
+            to_shop = request.user.business
+            to_shop_coordinate = (to_shop.latitude, to_shop.longitude)
 
-                to_shop = request.user.business
-                to_shop_coordinate = (to_shop.latitude, to_shop.longitude)
+            distance = calculate_distance(from_shop_coordinate, to_shop_coordinate)
+            distance += calculate_distance(hub_coordinate, from_shop_coordinate)
+            delivery_charge = distance * float(hub.fare_per_km)
 
-                distance = calculate_distance(from_shop_coordinate, to_shop_coordinate)
-                distance += calculate_distance(hub_coordinate, from_shop_coordinate)
-
-                delivery_charge = distance * float(hub.fare_per_km)
-
+            with transaction.atomic():
                 order = Order(
                     from_shop=from_shop,
                     to_shop=to_shop,
-                    product=product_shop.product,
+                    product=product.product,
                     quantity=quantity,
                     distance=distance,
                     delivery_charge=delivery_charge
                 )
                 order.save()
 
-                return redirect('home')
+                product.quantity -= quantity
+                product.save()
 
+                if 'session_key' in request.session:
+                    del request.session['session_key']
+                    request.session.modified = True 
 
-    return render(request, 'core/order.html', {'form': form, 'error': error, 'product_id': productshop_id})
+            return redirect('order_success')
 
 
 def direction_view(request):
@@ -457,3 +455,7 @@ def forecast_view(request):
     result = exp_smoothing_forecast()
 
     return render(request, 'core/forecast.html', {'forecasts': result})
+
+
+def success_order(request):
+    return render(request, 'core/order_confirmed.html')
