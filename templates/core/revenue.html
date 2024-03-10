@@ -1,0 +1,58 @@
+<!-- shop_detail.html -->
+{% extends '_base.html' %}
+
+{% block content %}
+
+  <div class="my-4 py-4">
+    <div class="container">
+      <div class="row justify-content-center align-items-center">
+        <div class="col-md-10 text-center mb-4">
+          
+        {% if orders %}
+
+            <div class="container mb-3">
+                <div class="row align-items-center">
+                    <div class="col-auto"> 
+                        <h3><strong>Collected revenue report </strong></h3>
+                    </div>
+                    <div class="col-auto ms-auto">  
+                        <h3><strong>Total: {{ total }}</strong></h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                        <th scope="col">From</th>
+                        <th scope="col">To</th>
+                        <th scope="col">Distance</th>
+                        <th scope="col">Delivery Charge</th>
+                        <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    
+                    {% for order in orders %}
+                    <tbody>
+                        <tr>
+                        <td>{{ order.from_shop.name }}</td>
+                        <td>{{ order.to_shop.name }}</td>
+                        <td>{{ order.distance }}</td>
+                        <td>{{ order.delivery_charge }}</td>
+                        <td>{{ order.created_at }}</td>
+                        </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+
+        {% endif %}
+          
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

@@ -83,68 +83,86 @@
 {% endblock extend_head %}
 
 {% block content %}
-<div class="mt-5 pt-5 pageholder">
-    <div class="mb-3"> 
-        
-        <h3>Direction route for the current pending orders</h3>
-        
+
+{% if locations %}
+  <div class="mt-5 pt-5 pageholder">
+    <div class="container mb-3">
+      <div class="row align-items-center">
+          <div class="col-auto"> 
+              <h3>Direction routes for the current pending orders</h3>
+          </div>
+          <div class="col-auto ms-auto">  
+              <a href="{% url "complete_delivery" %}" class="btn btn-primary">Complete Delivery</a> 
+          </div>
+      </div>
     </div>
 
 
-    <div class="linkholder">
-        <div class="mapholder border border-primary"> 
-            <div id="map"> </div>
+      <div class="linkholder">
+          <div class="mapholder border border-primary"> 
+              <div id="map"> </div>
 
-            <script async
-                src="https://maps.googleapis.com/maps/api/js?key={{key}}&libraries=geometry&loading=async&callback=initMap">
-            </script>
+              <script async
+                  src="https://maps.googleapis.com/maps/api/js?key={{key}}&libraries=geometry&loading=async&callback=initMap">
+              </script>
 
-        </div>
-        
-     </div>
+          </div>
+          
+      </div>
 
 
-     <table class="my-5 py-5">
-        <tbody>
-          <tr>
-            <td>Directions</td>
-            <td id="dir-toggle">click <a href="javascript:void(0)" onclick="DirectionsToggle()">here</a></td>      
-          </tr>
-    
-        </tbody>
-      </table>
-    
-
-    {% for leg in legs %}
-    <table id="dir-table" hidden>
-        <tbody>
-              <tr>
-              <td>Leg {{ forloop.counter }}</td>
-              <tr>
-                <td>Start: {{ leg.origin_address }}</td> 
-              </tr>
-              <tr>
-                <td>Destination: {{ leg.destination_address }}</td>
-              </tr>
-              <tr>
-                <td>Duration: {{ leg.duration }}</td>
-              </tr>
-              <tr>
-                <td>Distance: {{ leg.distance }}</td>     
-              </tr>
-            </tr>
-            {% for step in leg.steps %}
+      <table class="my-5 py-5">
+          <tbody>
             <tr>
-                <td>{{ step|safe }}</td>   
+              <td>Directions</td>
+              <td id="dir-toggle">click <a href="javascript:void(0)" onclick="DirectionsToggle()">here</a></td>      
             </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endfor %}
+      
+          </tbody>
+        </table>
+      
 
+      {% for leg in legs %}
+      <table id="dir-table" hidden>
+          <tbody>
+                <tr>
+                <td>Leg {{ forloop.counter }}</td>
+                <tr>
+                  <td>Start: {{ leg.origin_address }}</td> 
+                </tr>
+                <tr>
+                  <td>Destination: {{ leg.destination_address }}</td>
+                </tr>
+                <tr>
+                  <td>Duration: {{ leg.duration }}</td>
+                </tr>
+                <tr>
+                  <td>Distance: {{ leg.distance }}</td>     
+                </tr>
+              </tr>
+              {% for step in leg.steps %}
+              <tr>
+                  <td>{{ step|safe }}</td>   
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+      {% endfor %}
+  </div>
 
-
+{% else %}
+<div class="mt-5 pt-5 pageholder">
+  <div class="container mb-3">
+    <div class="row align-items-center">
+        <div class="col-auto"> 
+            <h3>No deliveries pending. Cheers!</h3>
+        </div>
+    </div>
+  </div>
 </div>
+
+
+{% endif %}
 
 
 {% endblock %}

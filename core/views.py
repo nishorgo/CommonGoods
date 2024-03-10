@@ -215,16 +215,44 @@ def order_view(request):
             return redirect('order_success')
 
 
+def complete_delivery_view(request):
+    undelivered_orders = Order.objects.filter(has_delivered=False)
+
+    for order in undelivered_orders:
+        order.has_delivered = True
+        order.save()
+
+    return redirect('home')
+
+
+def revenue_view(request):
+    completed_orders = Order.objects.filter(has_delivered=True)
+
+    total = 0
+    for order in completed_orders:
+        total += order.delivery_charge
+
+    return render(request, 'core/revenue.html', {'orders': completed_orders, 'total': total})
+
+
 def direction_view(request):
     undelivered_orders = Order.objects.filter(has_delivered=False)
     hub = HubConfiguration.objects.get()
     
     locations = [{'lat': float(hub.latitude), 'lng': float(hub.longitude), 'title': 'Central Hub', 'index': 1}]
+    seen_locations = set()
     index = 2
     for order in undelivered_orders:
-        locations.append({'lat': float(order.from_shop.latitude), 'lng': float(order.from_shop.longitude), 'title': order.from_shop.name, 'index': index})
-        locations.append({'lat': float(order.to_shop.latitude), 'lng': float(order.to_shop.longitude), 'title': order.to_shop.name, 'index': index+1})
-        index += 2
+        from_location = (order.from_shop.latitude, order.from_shop.longitude)
+        to_location = (order.to_shop.latitude, order.to_shop.longitude)
+
+        if (from_location, to_location) not in seen_locations:
+            locations.append({'lat': float(order.from_shop.latitude), 'lng': float(order.from_shop.longitude), 'title': order.from_shop.name, 'index': index})
+            locations.append({'lat': float(order.to_shop.latitude), 'lng': float(order.to_shop.longitude), 'title': order.to_shop.name, 'index': index+1})
+            index += 2
+
+            seen_locations.add((from_location, to_location))
+
 
     directions = get_directions(locations)
     route = directions['routes'][0]
@@ -257,7 +285,7 @@ def direction_view(request):
         'locations': locations[1:-1],
         'origin': locations[0],
         'destination': locations[-1],
-        'legs': leg_data 
+        'legs': leg_data
     }
 
     return render(request, 'core/direction.html', context)
